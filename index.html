@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>Basic AR eCommerce Example</title>
+
+  <script src="//cdn.8thwall.com/web/aframe/8frame-0.9.0.min.js"></script>
+  <script src="//cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+  <script src="//apps.8thwall.com/xrweb?appKey=ENTERYOURKEY"></script>
+  
+  
+  <script>
+  AFRAME.registerComponent('product-events',{
+    init: function(){
+        this.el.addEventListener('click',function() {
+        var soundclip = document.querySelector('[sound]');
+        soundclip.components.sound.playSound();
+      });
+
+      this.el.sceneEl.addEventListener('xrimagefound', function({detail}) {
+        if (detail.name === "vr-headset") {
+          document.getElementById("linkbox").style.visibility = "visible";
+          document.getElementById("itemlink").innerHTML = "Buy HTC Vive";
+        }
+        else {
+          document.getElementById("linkbox").style.visibility = "hidden";
+        }
+      });
+
+      this.el.sceneEl.addEventListener('xrimagelost', function() {
+        document.getElementById("linkbox").style.visibility = "hidden";
+      });
+    }
+  });
+  </script>
+
+
+  <style>
+    #linkbox {
+      position: fixed; 
+      top: 0px; 
+      width: 100%; 
+      z-index: 1; 
+      visibility: hidden;
+    }
+    #itemlink {
+      background: #28B9B4; 
+      width: 33%; 
+      font-size: 14px; 
+      font-weight: bold; 
+      color: white; 
+      float: right; 
+      padding: 40px; 
+      text-align: center; 
+    }
+  </style>
+</head>
+
+<body>
+
+  <a-scene
+  xrweb="disableWorldTracking: true"
+  xrextras-gesture-detector
+  xrextras-almost-there
+  xrextras-loading
+  xrextras-runtime-error>
+
+  <div id="linkbox">
+    <a href = "https://www.vive.com/uk/product/" id="itemlink"></a>
+  </div>
+
+  <a-assets>
+    <!-- Credit to Marco Romero and Google Poly for the model (https://poly.google.com/view/6ZPbRl78eRZ) -->
+    <a-asset-item id="vr-headset-model" src="vrmodel.glb"></a-asset-item>
+    <audio id="descsound" src="description.mp3" preload="auto"></audio>
+  </a-assets>
+
+  <a-camera
+    position="0 4 10"
+    raycaster="objects: .cantap"
+    cursor="fuse: false; rayOrigin: mouse;">
+  </a-camera>
+  <a-light type="directional" intensity="4" position="1 1 1"></a-light>
+  <a-light type="ambient" intensity="3"></a-light>
+
+  <a-entity xrextras-named-image-target="name: vr-headset">
+  <a-entity product-events xrextras-one-finger-rotate gltf-model="#vr-headset-model"></a-entity>
+    <a-entity text="align: center; value: HTC Vive VR Headset; width:1.5;" position="0 -1 -1" ></a-entity>
+    <a-entity sound="src: #descsound"></a-entity>
+  </a-entity>
+  </a-scene>
+
+</body>
+</html>
